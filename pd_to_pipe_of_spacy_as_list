@@ -1,0 +1,23 @@
+# Using spaCy pipeline: data from Pandas dataframe is to be passed as a list to nlp.pipe()   
+
+
+tokens = []
+lemma = []
+pos = []
+
+for doc in nlp.pipe(df['species'].astype('unicode').values, batch_size=50,
+                        n_threads=3):
+    if doc.is_parsed:
+        tokens.append([n.text for n in doc])
+        lemma.append([n.lemma_ for n in doc])
+        pos.append([n.pos_ for n in doc])
+    else:
+        # We want to make sure that the lists of parsed results have the
+        # same number of entries of the original Dataframe, so add some blanks in case the parse fails
+        tokens.append(None)
+        lemma.append(None)
+        pos.append(None)
+
+df['species_tokens'] = tokens
+df['species_lemma'] = lemma
+df['species_pos'] = pos
